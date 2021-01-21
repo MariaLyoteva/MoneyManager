@@ -1,7 +1,14 @@
 package money;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Scanner;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -15,7 +22,7 @@ public class MoneyManager {
 	public static void main(String[] args) {
 
 		JFrame frame = new JFrame("Money Manager");
-		frame.setSize(1000, 800);
+		frame.setSize(50000, 1000);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// main containers and Layouts
@@ -40,6 +47,23 @@ public class MoneyManager {
 		reportArea.setEditable(false);
 		reportArea.setText("Here are the reports from previous days");
 		leftPanel.add(reportArea);
+		File myObj = new File("filename.txt");
+		String text = "";
+		try {
+			Scanner myReader = new Scanner(myObj);
+			while (myReader.hasNextLine()) {
+				text += myReader.nextLine() + "\n";
+			}
+			myReader.close();
+		} catch (FileNotFoundException e) {
+			try {
+				myObj.createNewFile();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		reportArea.setText(text);
 		
 
 
@@ -57,17 +81,68 @@ public class MoneyManager {
 		rightPanel.add( expensesLabel);
 		JTextField expensesTxt = new JTextField();
 		rightPanel.add(expensesTxt);
+		
 		JLabel totalLabel = new JLabel("Total Income:");
 		rightPanel.add(totalLabel);
 		JTextField totalDayTxt = new JTextField();
 		rightPanel.add(totalDayTxt);
 
-		JButton thankButton = new JButton("Submit");
-		rightPanel.add(thankButton);
+		JButton subButton = new JButton("Submit");
+		subButton.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String income = incomeTxt.getText();
+				int integerIncome = Integer.parseInt(income);
+				String expenses = expensesTxt.getText();
+				int integerExp = Integer.parseInt(expenses);
+				int tot = integerIncome - integerExp;
+				String total = String.valueOf(tot);
+				totalDayTxt.setText(total);
+				if (income.isEmpty() && expenses.isEmpty()) {
+					return;
+				}
+				String text = 
+						currentDateLabel.getText() + "\n"
+				+ income + "\n"
+				+ expenses + "\n" 
+				+ total+ "\n";
+				try {
+					FileWriter myWriter = new FileWriter("filename.txt",true);
+					myWriter.write(text);
+					myWriter.close();
+
+				} catch (IOException e) {
+					System.out.println("An error occurred.");
+					e.printStackTrace();
+				}
+
+				File myObj = new File("filename.txt");
+				text = "";
+				try {
+					Scanner myReader = new Scanner(myObj);
+					while (myReader.hasNextLine()) {
+						text += myReader.nextLine() + "\n";
+					}
+					myReader.close();
+				} catch (FileNotFoundException e) {
+					try {
+						myObj.createNewFile();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+				reportArea.setText(text);
+
+			}
+		});
+		rightPanel.add(subButton);
+
+		
 		JLabel inspirationLabel = new JLabel("Money, like emotions, is something you must control"
-				+ " to keep your life on the right track");
-		rightPanel.add(inspirationLabel);
+			+ " to keep your life on the right track");
+	    rightPanel.add(inspirationLabel);
 
 		frame.pack();
 		// Setting the frame visibility to true
