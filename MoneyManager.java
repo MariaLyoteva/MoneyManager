@@ -25,12 +25,20 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.JInternalFrame;
+import javax.swing.SwingConstants;
+import java.awt.Component;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JSplitPane;
+import java.awt.Scrollbar;
 
 public class MoneyManager {
 	static String selectedCurrency = "$";
@@ -42,7 +50,7 @@ public class MoneyManager {
 
 		// main containers and Layouts
 		JPanel mainPanel = new JPanel();
-		frame.add(mainPanel);
+		frame.getContentPane().add(mainPanel);
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.X_AXIS));
 
 		JPanel leftPanel = new JPanel();
@@ -56,6 +64,8 @@ public class MoneyManager {
 		// left side
 		JLabel moneyManagerLabel = new JLabel("Money Report");
 		leftPanel.add(moneyManagerLabel);
+		
+		
 
 		JTextArea reportArea = new JTextArea();
 		reportArea.setBounds(100, 20, 165, 25);
@@ -90,7 +100,7 @@ public class MoneyManager {
 		
 		JLabel incomeLabel = new JLabel("Daily Income:");
 		 incomeLabel.setFont(new Font("Serif", Font.PLAIN, 14));
-		 incomeLabel.setAlignmentX(JLabel.RIGHT_ALIGNMENT);
+		 incomeLabel.setAlignmentX(2.0f);
 		rightPanel.add(incomeLabel);
 		//JTextField incomeTxt = new JTextField();
 		//rightPanel.add(incomeTxt);
@@ -167,7 +177,7 @@ public class MoneyManager {
 		rightPanel.add(totalDayTxt);
 
 		
-		  
+		rightPanel.add(Box.createRigidArea(new Dimension(10, 10))); 
 		String[] Currencies = {
 		         "$",
 		         "Лв.",
@@ -177,6 +187,8 @@ public class MoneyManager {
 	
 		
 		JComboBox currList = new JComboBox(Currencies);
+		currList.setAlignmentY(Component.BOTTOM_ALIGNMENT);
+		currList.setAlignmentX(3.0f);
 		currList.setEditable(true);
 		currList.addActionListener(new ActionListener() {
 
@@ -203,8 +215,15 @@ public class MoneyManager {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String income =incomeTxt.getText();
-				double dIncome = Double.parseDouble(income);
+				//double dIncome = Double.parseDouble(income);
 				String expenses = expensesTxt.getText();
+				//double dExp = Double.parseDouble(expenses);
+				if (income.isEmpty() && expenses.isEmpty()) {
+					 JOptionPane.showMessageDialog(frame,
+						        "Please enter your income and expenses!", null, JOptionPane.ERROR_MESSAGE, null);
+						   // System.exit(0);
+				}
+				double dIncome = Double.parseDouble(income);
 				double dExp = Double.parseDouble(expenses);
 				DecimalFormat df = new DecimalFormat("#.##");
 				df.setRoundingMode(RoundingMode.CEILING);
@@ -217,9 +236,9 @@ public class MoneyManager {
 				}
 				String text = 
 						currentDateLabel.getText() + "\n"
-				+ "Income: "+ income + selectedCurrency +  "\n"
-				+ "Expenses: "+expenses + "\n" 
-				+ "Total Income: " + total+ "\n";
+				+ "Income: "+ income + " " + selectedCurrency +  "\n"
+				+ "Expenses: "+expenses +  " " + selectedCurrency+ "\n" 
+				+ "Total Income: " + total+ " " + selectedCurrency+ "\n";
 				try {
 					FileWriter myWriter = new FileWriter("filename.txt",true);
 					myWriter.write(text);
